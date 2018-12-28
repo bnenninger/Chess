@@ -1,4 +1,4 @@
-package main;
+package game;
 
 /**
  * Stores the value of an index, and allows for easy conversion between zero-based, one-based, and a-based index values. 

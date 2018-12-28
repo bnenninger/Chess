@@ -1,8 +1,8 @@
 package moveRules;
 
+import game.IndexValue;
+import game.Position;
 import main.Board;
-import main.IndexValue;
-import main.Position;
 import pieces.ChessColor;
 
 /**

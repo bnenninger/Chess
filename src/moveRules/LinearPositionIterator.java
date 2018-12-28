@@ -2,8 +2,8 @@ package moveRules;
 
 import java.util.NoSuchElementException;
 
-import main.IndexValue;
-import main.Position;
+import game.IndexValue;
+import game.Position;
 
 /**
  * Iterates through the positions that a piece crosses, from the current (exclusive) to the final (exclusive)

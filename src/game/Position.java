@@ -1,4 +1,4 @@
-package main;
+package game;
 
 /**
  * Class to store a position on the chess board, with both a row and column component.
