@@ -6,11 +6,11 @@ public class Constants {
 	/**
 	 * Stores the column length of the chess board
 	 */
-	public static final int BOARD_COLUMN_DIMENSION = 8;
+	public static final int BOARD_COLUMN_NUMBER = 8;
 	/**
 	 * Stores the row length of the chess board
 	 */
-	public static final int BOARD_ROW_DIMENSION = 8;
+	public static final int BOARD_ROW_NUMBER = 8;
 	/**
 	 * Stores the IndexValue of the row white pawns start on
 	 */
