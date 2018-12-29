@@ -1,15 +1,13 @@
 package game;
 
+import main.Constants;
+
 /**
  * Class to store a position on the chess board, with both a row and column component.
  * @author Brendan Nenninger
  *
  */
 public final class Position {
-	/**
-	 * Defines the maximum value of a Position index. 8 for chess, due to 8x8 grid
-	 */
-	public final int MAX_VALUE = 8;
 	
 	private final IndexValue column;
 	private final IndexValue row;
@@ -20,7 +18,7 @@ public final class Position {
 	 * @param row the row value of the position
 	 */
 	public Position(IndexValue column, IndexValue row) {
-		if(checkValidIndex(column) || checkValidIndex(row)) {
+		if(!(checkValidIndex(column) && checkValidIndex(row))) {
 			throw new IllegalArgumentException("Invalid position");
 		}
 		this.column = column;
@@ -104,6 +102,6 @@ public final class Position {
 	 * @return boolean, true if the index is between 1 and MAX_VALUE, inclusive
 	 */
 	private boolean checkValidIndex(IndexValue index) {
-		return index.toOneBasedIndex() <= MAX_VALUE && index.toOneBasedIndex() >= 1; 
+		return index.toOneBasedIndex() <= Math.max(Constants.BOARD_COLUMN_NUMBER, Constants.BOARD_ROW_NUMBER) && index.toOneBasedIndex() >= 1; 
 	}
 }
