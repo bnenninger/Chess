@@ -45,6 +45,19 @@ public class DetailedTurn extends Turn {
 		this.check = check;
 		this.checkmate = checkmate;
 	}
+	
+	/**
+	 * Creates a new DetailedTurn, which stores all the information required for chess algebraic notation. 
+	 * This constructor creates a DetailedTurn based on a copy of a regular Turn
+	 * @param turn the Turn information being copied
+	 * @param piece the piece moved
+	 * @param capture whether there was a capture on the turn
+	 * @param check whether the opposing king was put in check on the turn
+	 * @param checkmate whether the opposing king was put in checkmate on the turn
+	 */
+	public DetailedTurn(Turn turn, Piece piece, boolean capture, boolean check, boolean checkmate) {
+		this(turn.getCurrent(), turn.getProposed(), piece, capture, check, checkmate);
+	}
 
 	/**
 	 * Returns the piece moved.
