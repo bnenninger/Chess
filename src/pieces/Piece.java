@@ -1,5 +1,7 @@
 package pieces;
 
+import game.Position;
+
 /**
  * A specific piece in the chess game. Stores both the color and type of the piece.
  * @author Brendan Nenninger
@@ -10,14 +12,17 @@ public class Piece {
 	private PieceType pieceType;
 	private ChessColor color;
 	
+	private Position position;
+	
 	/**
 	 * Creates a new Piece. A new instance should be created for every piece on the chess board.
 	 * @param piece the type of the piece
 	 * @param color the color of the piece
 	 */
-	public Piece(PieceType piece, ChessColor color) {
+	public Piece(PieceType piece, ChessColor color, Position position) {
 		this.pieceType = piece;
 		this.color = color;
+		this.position = position;
 	}
 	
 	/**
@@ -50,5 +55,13 @@ public class Piece {
 	 */
 	public ChessColor getColor() {
 		return color;
+	}
+	
+	public Position getPosition() {
+		return position;
+	}
+	
+	public void setPosition(Position newPosition) {
+		this.position = newPosition;
 	}
 }
