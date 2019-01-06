@@ -1,6 +1,7 @@
 package moveRules;
 
 import game.Board;
+import game.IndexValue;
 import game.Position;
 import pieces.ChessColor;
 
@@ -9,7 +10,7 @@ import pieces.ChessColor;
  * @author Brendan Nenninger
  *
  */
-public interface MoveRule {
+public abstract class MoveRule {
 	/**
 	 * Checks whether the move is valid and legal, to allow the board to move the pieces based on that command
 	 * @param current the current position of the piece to be moved
@@ -18,5 +19,45 @@ public interface MoveRule {
 	 * @param board the board the piece is being moved on, used to check that pieces do not collide
 	 * @return boolean, true if the movement is valid and can legally be performed
 	 */
-	public boolean isValidMove(Position current, Position proposed, ChessColor color, Board board);
+	public abstract boolean isValidMove(Position current, Position proposed, ChessColor color, Board board);
+	
+	/**
+	 * Returns the positions that a piece passes through between the current and proposed positions, 
+	 * which if blocked would prevent the move
+	 * @param current the current location of the moving piece
+	 * @param proposed the proposed position of the moving piece
+	 * @param color the color of the piece moving
+	 * @return Position[] of positions that if blocked would prevent the move
+	 */
+	public abstract Position[] getIntermediaryPositions(Position current, Position proposed, ChessColor color);
+	
+	/**
+	 * Returns the absolute value difference between the current and proposed columns.
+	 * @param current the current position
+	 * @param proposed the proposed new position
+	 * @return positive integer value of the difference between the column values
+	 */
+	protected int getAbsoluteColumnDifference(Position current, Position proposed) {
+		return getAbsoluteDifference(current.getColumn(), proposed.getColumn());
+	}
+	
+	/**
+	 * Returns the absolute value difference between the current and proposed rows.
+	 * @param current the current position
+	 * @param proposed the proposed new position
+	 * @return positive integer value of the difference between the row values
+	 */
+	protected int getAbsoluteRowDifference(Position current, Position proposed) {
+		return getAbsoluteDifference(current.getRow(), proposed.getRow());
+	}
+	
+	/**
+	 * Returns the absolute value difference between two IndexValues.
+	 * @param current the current IndexValue of the piece
+	 * @param proposed the proposed new IndexValue of the piece
+	 * @return positive integer value of the difference between the two values
+	 */
+	private int getAbsoluteDifference(IndexValue current, IndexValue proposed) {
+		return Math.abs(current.toZeroBasedIndex() - proposed.toZeroBasedIndex());
+	}
 }
