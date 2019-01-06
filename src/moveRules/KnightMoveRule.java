@@ -11,7 +11,7 @@ import pieces.ChessColor;
  * @author Brendan Nenninger
  *
  */
-public class KnightMoveRule implements MoveRule {
+public class KnightMoveRule extends MoveRule {
 
 	//stores the maximum distance the piece can travel in each direction 
 	private final int largeDimension;
@@ -33,5 +33,10 @@ public class KnightMoveRule implements MoveRule {
 		int columnDistance = Math.abs(proposed.getColumn().toZeroBasedIndex() - current.getColumn().toZeroBasedIndex());
 		return Math.max(rowDistance, columnDistance) == largeDimension
 				&& Math.min(rowDistance, columnDistance) == smallDimension;
+	}
+
+	@Override
+	public Position[] getIntermediaryPositions(Position current, Position proposed, ChessColor color) {
+		return new Position[0];//Returns a blank array, as the knight is not blocked by pieces in the way.
 	}
 }

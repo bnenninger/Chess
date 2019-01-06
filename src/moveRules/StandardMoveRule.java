@@ -10,7 +10,7 @@ import pieces.ChessColor;
  * @author Brendan Nenninger
  *
  */
-public class StandardMoveRule implements MoveRule {
+public class StandardMoveRule extends MoveRule {
 	/**
 	 * stores whether the piece is allowed to move vertically
 	 */
@@ -48,13 +48,8 @@ public class StandardMoveRule implements MoveRule {
 			throw new IllegalArgumentException("Proposed move is current position");
 		}
 		//establishes the difference in column and row
-		int currentRow = current.getRow().toZeroBasedIndex(),
-				proposedRow = proposed.getRow().toZeroBasedIndex(),
-				currentColumn = current.getColumn().toZeroBasedIndex(),
-				proposedColumn = proposed.getColumn().toZeroBasedIndex();
-		int rowDifference = Math.abs(proposedRow - currentRow);
-		int columnDifference = Math.abs(proposedColumn - currentColumn);
-		
+		int columnDifference = getAbsoluteColumnDifference(current, proposed);
+		int rowDifference = getAbsoluteRowDifference(current, proposed);
 		return isValidDistance(columnDifference, rowDifference)
 				&& isValidLinearMove(columnDifference, rowDifference)
 				&& checkNoCollisions(current, proposed, board);
@@ -85,8 +80,17 @@ public class StandardMoveRule implements MoveRule {
 	 * @return true if the distance travelled is legal based on this rule
 	 */
 	private boolean isValidDistance(int columnDifference, int rowDifference) {
-		/* checks distance traveled
-		 * Finds the maximum row of column difference
+		return getDistance(columnDifference, rowDifference) <= maxDistance;
+	}
+	
+	/**
+	 * Returns the distance between the two positions.
+	 * @param columnDifference the difference between the column values
+	 * @param rowDifference the difference between the row values
+	 * @return positive integer distance between the two positions
+	 */
+	private int getDistance(int columnDifference, int rowDifference) {
+		/* Finds the distance traveled by finding the maximum row of column difference
 		 * this is valid because it covers both the diagonal and linear cases
 		 * Diagonal: the row and column difference will be the same
 		 * Linear: one of the distances will be zero, and therefore the maximum of the two will be the distance traveled
@@ -95,7 +99,7 @@ public class StandardMoveRule implements MoveRule {
 		 */
 		columnDifference = Math.abs(rowDifference);
 		rowDifference = Math.abs(columnDifference);
-		return Math.max(columnDifference, rowDifference) <= maxDistance;
+		return Math.max(columnDifference, rowDifference);
 	}
 	
 	/**
@@ -108,5 +112,18 @@ public class StandardMoveRule implements MoveRule {
 		return (verticalMove && columnDifference == 0) //checks valid vertical move
 				|| (horizontalMove && rowDifference == 0) //checks valid vertical and horizontal move
 				|| (diagonalMove && Math.abs(columnDifference) == Math.abs(rowDifference)); //checks valid diagonal move
+	}
+
+	@Override
+	public Position[] getIntermediaryPositions(Position current, Position proposed, ChessColor color) {
+		int columnDifference = getAbsoluteColumnDifference(current, proposed);
+		int rowDifference = getAbsoluteRowDifference(current, proposed);
+		int numberOfPositions = getDistance(columnDifference, rowDifference) - 1;//1 subtracted because the distance includes one end, but the intermediary positions do not include either end
+		Position[] intermediaryPositions = new Position[numberOfPositions];
+		LinearPositionIterator positionIterator = new LinearPositionIterator(current, proposed);
+		for(int i = 0; i < intermediaryPositions.length; i++) {
+			intermediaryPositions[i] = positionIterator.next();
+		}
+		return intermediaryPositions;
 	}
 }
