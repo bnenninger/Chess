@@ -19,10 +19,9 @@ public class Piece {
 	 * @param piece the type of the piece
 	 * @param color the color of the piece
 	 */
-	public Piece(PieceType piece, ChessColor color, Position position) {
+	public Piece(PieceType piece, ChessColor color) {
 		this.pieceType = piece;
 		this.color = color;
-		this.position = position;
 	}
 	
 	/**
