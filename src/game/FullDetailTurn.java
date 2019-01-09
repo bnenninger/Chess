@@ -46,8 +46,8 @@ public class FullDetailTurn extends PieceDetailTurn {
 
 	/**
 	 * Creates a new FullDetailTurn, which stores all the information required for
-	 * chess algebraic notation. This constructor creates a FullDetailTurn based on a
-	 * copy of a regular Turn
+	 * chess algebraic notation. This constructor creates a FullDetailTurn based on
+	 * a copy of a regular Turn.
 	 * 
 	 * @param turn      the Turn information being copied
 	 * @param piece     the piece moved
@@ -57,6 +57,19 @@ public class FullDetailTurn extends PieceDetailTurn {
 	 */
 	public FullDetailTurn(Turn turn, Piece piece, Piece captured, boolean check, boolean checkmate) {
 		this(turn.getCurrent(), turn.getProposed(), piece, captured, check, checkmate);
+	}
+
+	/**
+	 * reates a new FullDetailTurn, which stores all the information required for
+	 * chess algebraic notation. This constructor creates a FullDetailTurn based on
+	 * a copy of a PieceDetailTurn.
+	 * 
+	 * @param turn      the PieceDetailTurn information to be coppied
+	 * @param check     whether the oppsoing king was put in check on the turn
+	 * @param checkmate whether the opposing king was put in checkmate on the turn
+	 */
+	public FullDetailTurn(PieceDetailTurn turn, boolean check, boolean checkmate) {
+		this(turn, turn.getPiece(), turn.getCaptured(), check, checkmate);
 	}
 
 	/**
