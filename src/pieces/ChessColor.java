@@ -28,4 +28,19 @@ public enum ChessColor {
 	public String toString() {
 		return this.name().toLowerCase();
 	}
+	
+	/**
+	 * Returns the opposite color of the current color, eg. BLACK for WHITE. Throws exception for DRAW case.
+	 * @return opposite color of the current color
+	 */
+	public ChessColor getOppositeColor() {
+		switch(this) {
+		case WHITE:
+			return ChessColor.BLACK;
+		case BLACK:
+			return ChessColor.WHITE;
+		default:
+			throw new IllegalArgumentException("No opposite color to DRAW case");
+		}
+	}
 }
