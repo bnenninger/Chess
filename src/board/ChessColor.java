@@ -1,4 +1,4 @@
-package pieces;
+package board;
 
 /**
  * Used to store the white and black colors of chess pieces.

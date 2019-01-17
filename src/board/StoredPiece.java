@@ -1,4 +1,4 @@
-package pieces;
+package board;
 
 import game.Position;
 
@@ -9,7 +9,7 @@ import game.Position;
  * @author Brendan Nenninger
  *
  */
-public class StoredPiece extends Piece {
+class StoredPiece extends Piece {
 
 	private PieceType pieceType;
 	private ChessColor color;
@@ -67,7 +67,7 @@ public class StoredPiece extends Piece {
 	 * 
 	 * @param newPosition
 	 */
-	public void setPosition(Position newPosition) {
+	void setPosition(Position newPosition) {
 		this.position = newPosition;
 	}
 }

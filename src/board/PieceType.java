@@ -1,4 +1,4 @@
-package pieces;
+package board;
 
 import moveRules.MoveRule;
 import moveRules.MoveRuleConstant;

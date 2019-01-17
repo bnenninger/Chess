@@ -1,6 +1,6 @@
 package game;
 
-import pieces.Piece;
+import board.Piece;
 
 /**
  * Version of Turn that also includes information on the piece moved and the

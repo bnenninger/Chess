@@ -1,6 +1,6 @@
 package game;
 
-import pieces.Piece;
+import board.Piece;
 
 /**
  * Version of PieceDetailTurn class that includes additional information about

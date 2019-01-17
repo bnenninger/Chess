@@ -1,4 +1,4 @@
-package pieces;
+package board;
 
 import game.Position;
 
