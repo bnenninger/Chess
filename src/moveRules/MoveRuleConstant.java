@@ -4,6 +4,9 @@ public class MoveRuleConstant {
 	/**
 	 * move rule for all the king's moves
 	 */
+	// Does not use a special move rule. For every move it must be considered
+	// whether the king is in check, so movement of the king is not a special case
+	// that needs to be handled differently.
 	public static final MoveRule KING_MOVE_RULE = new StandardMoveRule(true, true, true, 1);
 	/**
 	 * move rule for all the queen's moves

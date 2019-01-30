@@ -1,10 +1,10 @@
 package moveRules;
 
-import game.Board;
+import board.Board;
+import board.ChessColor;
 import game.IndexValue;
 import game.Position;
 import main.Constants;
-import pieces.ChessColor;
 
 /**
  * Rule for the movement of pawns, accounts for the legal two-square move a pawn may perform on its first turn.

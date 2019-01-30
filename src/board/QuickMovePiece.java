@@ -1,9 +1,6 @@
 package board;
 
 import game.Position;
-import pieces.ChessColor;
-import pieces.Piece;
-import pieces.PieceType;
 
 /**
  * Class to store a piece and a modified position, intended for use with the

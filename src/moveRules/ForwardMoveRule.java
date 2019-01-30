@@ -1,8 +1,8 @@
 package moveRules;
 
-import game.Board;
+import board.Board;
+import board.ChessColor;
 import game.Position;
-import pieces.ChessColor;
 
 /**
  * Rule for linear movement of a piece, which is restricted to the piece moving forward or horizontally. 

@@ -1,9 +1,9 @@
 package moveRules;
 
-import game.Board;
+import board.Board;
+import board.ChessColor;
 import game.IndexValue;
 import game.Position;
-import pieces.ChessColor;
 
 /**
  * Interface for the various rules that govern how a chess piece moves

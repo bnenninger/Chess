@@ -1,8 +1,8 @@
 package moveRules;
 
-import game.Board;
+import board.Board;
+import board.ChessColor;
 import game.Position;
-import pieces.ChessColor;
 
 /**
  * Rule for the movement of a piece that travels a particular, distinct distance along two different dimensions. 

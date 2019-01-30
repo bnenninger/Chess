@@ -1,8 +1,8 @@
 package moveRules;
 
-import game.Board;
+import board.Board;
+import board.ChessColor;
 import game.Position;
-import pieces.ChessColor;
 
 /**
  * Rule for the linear movement of typical pieces, such as rooks and the queen. Allows for vertical, horizontal, and diagonal movement, 
