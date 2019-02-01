@@ -22,13 +22,13 @@ public class PawnMoveRule extends ForwardMoveRule {
 		super(true, false, false, 1);
 	}
 
-	public boolean isValidMove(Position current, Position proposed, ChessColor color, Board board) {
-		if(super.isValidMove(current, proposed, color, board)) {
+	public boolean isValidPieceMove(Position current, Position proposed, ChessColor color, Board board) {
+		if(super.isValidPieceMove(current, proposed, color, board)) {
 			return true;
 		}
 		if((current.getRow().equals(Constants.WHITE_PAWN_ROW) && color.equals(ChessColor.WHITE))
 				|| (current.getRow().equals(Constants.BLACK_PAWN_ROW) && color.equals(ChessColor.BLACK))) {
-			return PAWN_FIRST_MOVE_EXTRA_RULE.isValidMove(current, proposed, color, board);
+			return PAWN_FIRST_MOVE_EXTRA_RULE.isValidPieceMove(current, proposed, color, board);
 		}
 		return false;
 	}

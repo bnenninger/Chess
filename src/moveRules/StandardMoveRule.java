@@ -43,7 +43,7 @@ public class StandardMoveRule extends MoveRule {
 	}
 
 	@Override
-	public boolean isValidMove(Position current, Position proposed, ChessColor color, Board board) {
+	public boolean isValidPieceMove(Position current, Position proposed, ChessColor color, Board board) {
 		if(current.equals(proposed)) {
 			throw new IllegalArgumentException("Proposed move is current position");
 		}

@@ -24,7 +24,7 @@ public class ForwardMoveRule extends StandardMoveRule {
 		super(verticalMove, horizontalMove, diagonalMove, distance);
 	}
 
-	public boolean isValidMove(Position current, Position proposed, ChessColor color, Board board) {
+	public boolean isValidPieceMove(Position current, Position proposed, ChessColor color, Board board) {
 		int direction = -1;
 		if(color.equals(ChessColor.WHITE)) {
 			direction = 1;
@@ -35,6 +35,6 @@ public class ForwardMoveRule extends StandardMoveRule {
 			return false;
 		}
 		//checks for standard movement patterns
-		return super.isValidMove(current, proposed, color, board);
+		return super.isValidPieceMove(current, proposed, color, board);
 	}
 }
