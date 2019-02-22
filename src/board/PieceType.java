@@ -13,8 +13,8 @@ public enum PieceType {
 	KING	(MoveRuleConstant.KING_MOVE_RULE, 	MoveRuleConstant.KING_MOVE_RULE,	"K"),
 	QUEEN	(MoveRuleConstant.QUEEN_MOVE_RULE, 	MoveRuleConstant.QUEEN_MOVE_RULE,	"Q"),
 	ROOK	(MoveRuleConstant.ROOK_MOVE_RULE,	MoveRuleConstant.ROOK_MOVE_RULE,	"R"),
-	BISHOP	(MoveRuleConstant.BISHOP_MOVE_RULE,	MoveRuleConstant.BISHOP_MOVE_RULE,	"N"),
-	KNIGHT	(MoveRuleConstant.KNIGHT_MOVE_RULE,	MoveRuleConstant.KNIGHT_MOVE_RULE,	"B"),
+	BISHOP	(MoveRuleConstant.BISHOP_MOVE_RULE,	MoveRuleConstant.BISHOP_MOVE_RULE,	"B"),
+	KNIGHT	(MoveRuleConstant.KNIGHT_MOVE_RULE,	MoveRuleConstant.KNIGHT_MOVE_RULE,	"N"),
 	PAWN	(MoveRuleConstant.PAWN_MOVE_RULE,	MoveRuleConstant.PAWN_CAPTURE_RULE,	"");
 	
 	/**
