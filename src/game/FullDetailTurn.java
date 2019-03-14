@@ -32,14 +32,14 @@ public class FullDetailTurn extends PieceDetailTurn {
 	 * 
 	 * @param current   the current (initial) position of the piece
 	 * @param proposed  the proposed (final) position of the piece
-	 * @param piece     the piece moved
+	 * @param moved     the piece moved
 	 * @param captured  the piece captured (if any, null if none)
 	 * @param check     whether the opposing king was put in check on the turn
 	 * @param checkmate whether the opposing king was put in checkmate on the turn
 	 */
-	public FullDetailTurn(Position current, Position proposed, Piece piece, Piece captured, boolean check,
+	public FullDetailTurn(Position current, Position proposed, Piece moved, Piece captured, boolean check,
 			boolean checkmate) {
-		super(current, proposed, piece, captured);
+		super(current, proposed, moved, captured);
 		this.check = check;
 		this.checkmate = checkmate;
 	}
@@ -50,13 +50,13 @@ public class FullDetailTurn extends PieceDetailTurn {
 	 * a copy of a regular Turn.
 	 * 
 	 * @param turn      the Turn information being copied
-	 * @param piece     the piece moved
-	 * @param capture   whether there was a capture on the turn
+	 * @param moved     the piece moved
+	 * @param captured  the piece captured (if any, null if none)
 	 * @param check     whether the opposing king was put in check on the turn
 	 * @param checkmate whether the opposing king was put in checkmate on the turn
 	 */
-	public FullDetailTurn(Turn turn, Piece piece, Piece captured, boolean check, boolean checkmate) {
-		this(turn.getCurrent(), turn.getProposed(), piece, captured, check, checkmate);
+	public FullDetailTurn(Turn turn, Piece moved, Piece captured, boolean check, boolean checkmate) {
+		this(turn.getCurrent(), turn.getProposed(), moved, captured, check, checkmate);
 	}
 
 	/**
@@ -64,14 +64,14 @@ public class FullDetailTurn extends PieceDetailTurn {
 	 * chess algebraic notation. This constructor creates a FullDetailTurn based on
 	 * a copy of a PieceDetailTurn.
 	 * 
-	 * @param turn      the PieceDetailTurn information to be coppied
-	 * @param check     whether the oppsoing king was put in check on the turn
+	 * @param turn      the PieceDetailTurn information to be copied
+	 * @param check     whether the opposing king was put in check on the turn
 	 * @param checkmate whether the opposing king was put in checkmate on the turn
 	 */
 	public FullDetailTurn(PieceDetailTurn turn, boolean check, boolean checkmate) {
 		this(turn, turn.getPiece(), turn.getCaptured(), check, checkmate);
 	}
-
+	
 	/**
 	 * Returns a boolean indicating whether the opposing king was put in check.
 	 * 
