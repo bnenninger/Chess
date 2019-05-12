@@ -24,8 +24,13 @@ class StoredPiece extends Piece {
 	 * @param color the color of the piece
 	 */
 	public StoredPiece(PieceType piece, ChessColor color) {
+		this(piece, color, null);
+	}
+	
+	public StoredPiece(PieceType piece, ChessColor color, Position position) {
 		this.pieceType = piece;
 		this.color = color;
+		this.position = position;
 	}
 
 	/**
@@ -33,7 +38,7 @@ class StoredPiece extends Piece {
 	 * &lt;type&gt;]"
 	 */
 	public String toString() {
-		return "Piece[" + color.toString() + " " + pieceType.toString() + "]";
+		return "Piece[" + color.toString() + "," + pieceType.toString() + "," + position.toString() + "]";
 	}
 
 	/**
