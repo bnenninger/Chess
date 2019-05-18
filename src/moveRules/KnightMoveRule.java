@@ -11,7 +11,7 @@ import game.Position;
  * @author Brendan Nenninger
  *
  */
-public class KnightMoveRule extends MoveRule {
+class KnightMoveRule extends MoveRule {
 
 	//stores the maximum distance the piece can travel in each direction 
 	private final int largeDimension;

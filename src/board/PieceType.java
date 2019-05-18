@@ -1,7 +1,6 @@
 package board;
 
 import moveRules.MoveRule;
-import moveRules.MoveRuleConstant;
 
 /**
  * Stores the different possible chess pieces. Stores the rules that govern the pieces movement, 
@@ -10,12 +9,12 @@ import moveRules.MoveRuleConstant;
  *
  */
 public enum PieceType {
-	KING	(MoveRuleConstant.KING_MOVE_RULE, 	MoveRuleConstant.KING_MOVE_RULE,	"K"),
-	QUEEN	(MoveRuleConstant.QUEEN_MOVE_RULE, 	MoveRuleConstant.QUEEN_MOVE_RULE,	"Q"),
-	ROOK	(MoveRuleConstant.ROOK_MOVE_RULE,	MoveRuleConstant.ROOK_MOVE_RULE,	"R"),
-	BISHOP	(MoveRuleConstant.BISHOP_MOVE_RULE,	MoveRuleConstant.BISHOP_MOVE_RULE,	"B"),
-	KNIGHT	(MoveRuleConstant.KNIGHT_MOVE_RULE,	MoveRuleConstant.KNIGHT_MOVE_RULE,	"N"),
-	PAWN	(MoveRuleConstant.PAWN_MOVE_RULE,	MoveRuleConstant.PAWN_CAPTURE_RULE,	"");
+	KING	(MoveRule.KING_MOVE_RULE, 	MoveRule.KING_MOVE_RULE,	"K"),
+	QUEEN	(MoveRule.QUEEN_MOVE_RULE, 	MoveRule.QUEEN_MOVE_RULE,	"Q"),
+	ROOK	(MoveRule.ROOK_MOVE_RULE,	MoveRule.ROOK_MOVE_RULE,	"R"),
+	BISHOP	(MoveRule.BISHOP_MOVE_RULE,	MoveRule.BISHOP_MOVE_RULE,	"B"),
+	KNIGHT	(MoveRule.KNIGHT_MOVE_RULE,	MoveRule.KNIGHT_MOVE_RULE,	"N"),
+	PAWN	(MoveRule.PAWN_MOVE_RULE,	MoveRule.PAWN_CAPTURE_RULE,	"");
 	
 	/**
 	 * stores the rule that governs how a piece moves, specifically when capturing

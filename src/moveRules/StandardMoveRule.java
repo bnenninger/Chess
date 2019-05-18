@@ -10,7 +10,7 @@ import game.Position;
  * @author Brendan Nenninger
  *
  */
-public class StandardMoveRule extends MoveRule {
+class StandardMoveRule extends MoveRule {
 	/**
 	 * stores whether the piece is allowed to move vertically
 	 */

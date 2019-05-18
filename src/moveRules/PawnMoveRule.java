@@ -2,7 +2,6 @@ package moveRules;
 
 import board.Board;
 import board.ChessColor;
-import game.IndexValue;
 import game.Position;
 import main.Constants;
 
@@ -11,7 +10,7 @@ import main.Constants;
  * @author Brendan Nenninger
  *
  */
-public class PawnMoveRule extends ForwardMoveRule {
+class PawnMoveRule extends ForwardMoveRule {
 
 	static final MoveRule PAWN_FIRST_MOVE_EXTRA_RULE = new ForwardMoveRule(true, false, false, 2);
 

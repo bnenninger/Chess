@@ -11,7 +11,7 @@ import game.Position;
  * @author Brendan Nenninger
  *
  */
-public class ForwardMoveRule extends StandardMoveRule {
+class ForwardMoveRule extends StandardMoveRule {
 
 	/**
 	 * Creates a MoveRule that governs linear movement of pieces, restricted to the forward direction

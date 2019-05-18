@@ -11,7 +11,7 @@ import game.Position;
  *
  */
 //excludes the final position because that is handled by the the board, as it is either captured or ensured to be empty
-public class LinearPositionIterator {
+class LinearPositionIterator {
 	
 	private int currentColumn;
 	private int currentRow;
