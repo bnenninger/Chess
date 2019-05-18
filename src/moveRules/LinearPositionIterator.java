@@ -2,7 +2,6 @@ package moveRules;
 
 import java.util.NoSuchElementException;
 
-import game.IndexValue;
 import game.Position;
 
 /**
@@ -31,10 +30,10 @@ class LinearPositionIterator {
 	 * @param proposed the proposed new position of the piece, excluded from the iteration
 	 */
 	public LinearPositionIterator(Position current, Position proposed) {
-		currentColumn = current.getColumn().toZeroBasedIndex();
-		currentRow = current.getRow().toZeroBasedIndex();
-		finalColumn = proposed.getColumn().toZeroBasedIndex();
-		finalRow = proposed.getRow().toZeroBasedIndex();
+		currentColumn = current.getColumn();
+		currentRow = current.getRow();
+		finalColumn = proposed.getColumn();
+		finalRow = proposed.getRow();
 		columnChangeDirectionFactor = getDirectionFactor(currentColumn, finalColumn);
 		rowChangeDirectionFactor = getDirectionFactor(currentRow, finalRow);
 		iteratePosition();
@@ -48,7 +47,7 @@ class LinearPositionIterator {
 		if(!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		Position output = new Position(new IndexValue(currentColumn), new IndexValue(currentRow));
+		Position output = new Position(currentColumn, currentRow);
 		iteratePosition();
 		return output;
 	}

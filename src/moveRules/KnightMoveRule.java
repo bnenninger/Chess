@@ -29,8 +29,8 @@ class KnightMoveRule extends MoveRule {
 	
 	@Override
 	public boolean isValidPieceMove(Position current, Position proposed, ChessColor color, Board board) {
-		int rowDistance = Math.abs(proposed.getRow().toZeroBasedIndex() - current.getRow().toZeroBasedIndex());
-		int columnDistance = Math.abs(proposed.getColumn().toZeroBasedIndex() - current.getColumn().toZeroBasedIndex());
+		int rowDistance = Math.abs(proposed.getRow() - current.getRow());
+		int columnDistance = Math.abs(proposed.getColumn() - current.getColumn());
 		return Math.max(rowDistance, columnDistance) == largeDimension
 				&& Math.min(rowDistance, columnDistance) == smallDimension;
 	}

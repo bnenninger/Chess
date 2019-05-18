@@ -1,27 +1,21 @@
 package board;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import game.FullDetailTurn;
-import game.IndexValue;
 import game.Position;
 import game.Turn;
+import main.Constants;
 
 public class PlayingBoard extends Board {
 
 	private static final int PAD_WIDTH = 3;
 
-	// TODO change to a hashmap
-	// a grid array is not necessary for this to function, as long as you can
-	// retrieve any location
-	private StoredPiece[][] board;// [column][row]
+	private HashMap<Position, StoredPiece> board;
 	private ColorItemStorage<List<StoredPiece>> piecesInPlay;
-//	private ArrayList<StoredPiece> whitePieces;
-//	private ArrayList<StoredPiece> blackPieces;
 	private ColorItemStorage<List<StoredPiece>> capturedPieces;
-//	private ArrayList<StoredPiece> whiteCaptured;
-//	private ArrayList<StoredPiece> blackCaptured;
 
 	// Kings are stored individually, as it must be verified if they are in check at
 	// every turn
@@ -34,21 +28,15 @@ public class PlayingBoard extends Board {
 		this(initializePieces());
 	}
 
-	// TODO can JUnit test cases access private methods
 	/**
 	 * Initializes a PlayingBoard with the passed list of pieces.
 	 * 
 	 * @param pieces list of pieces to place on the board
 	 */
 	private PlayingBoard(List<StoredPiece> pieces) {
-		board = new StoredPiece[8][8];
-//		whitePieces = new ArrayList<StoredPiece>(16);
-//		blackPieces = new ArrayList<StoredPiece>(16);
-//		piecesInPlay = new ColorItemStorage<List<StoredPiece>>(whitePieces, blackPieces);
+		board = new HashMap<Position, StoredPiece>(32);
 		piecesInPlay = new ColorItemStorage<List<StoredPiece>>(new ArrayList<StoredPiece>(16),
 				new ArrayList<StoredPiece>(16));
-//		whiteCaptured = new ArrayList<StoredPiece>();
-//		blackCaptured = new ArrayList<StoredPiece>();
 		capturedPieces = new ColorItemStorage<List<StoredPiece>>(new ArrayList<StoredPiece>(),
 				new ArrayList<StoredPiece>());
 		kings = new ColorItemStorage<Piece>();
@@ -60,20 +48,8 @@ public class PlayingBoard extends Board {
 			// Stores pieces in their appropriate lists based on their color
 			piecesInPlay.getItem(piece.getColor()).add(piece);
 			// places the piece on the board
-			setPosition(piece, piece.getPosition());
+			board.put(piece.getPosition(), piece);
 		}
-	}
-
-	/**
-	 * 
-	 * Note: this method is only intended to be used for debugging, and should not
-	 * exist in production branches.
-	 * 
-	 * @param bool   unneeded variable to distinguish from an internal method
-	 * @param pieces Array of pieces to add to the game board
-	 */
-	public PlayingBoard(boolean bool, List<StoredPiece> pieces) {
-		this(pieces);
 	}
 
 	/**
@@ -85,49 +61,23 @@ public class PlayingBoard extends Board {
 	 *         destination pieces, and whether the move is check or checkmate
 	 */
 	public FullDetailTurn move(Turn turn) {
-		StoredPiece destination = getPosition(turn.getProposed());
+		StoredPiece destination = board.get(turn.getProposed());
 		// if the destination is not empty, capture it
 		if (destination != null) {
 			capture(destination);
 		}
 		// move the piece
-		StoredPiece moving = remove(turn.getCurrent());
+		//removes the piece from the original place in the board HashMap
+		StoredPiece moving = board.remove(turn.getCurrent());
+		//sets the position stored in the piece
 		moving.setPosition(turn.getProposed());
-		setPosition(moving, turn.getProposed());
+		//sets the position on the board
+		board.put(turn.getProposed(), moving);
 		// returns a move with piece information
 		ChessColor oppositeColor = moving.getColor().getOppositeColor();
 		boolean check = super.isInCheck(oppositeColor);
 		boolean checkmate = super.isCheckMate(oppositeColor);
 		return new FullDetailTurn(turn, moving, destination, check, checkmate);
-	}
-
-	private void setPosition(StoredPiece piece, Position position) {
-		setPosition(piece, position.getColumn(), position.getRow());
-	}
-
-	private void setPosition(StoredPiece piece, IndexValue column, IndexValue row) {
-		board[column.toZeroBasedIndex()][row.toZeroBasedIndex()] = piece;
-	}
-
-	public StoredPiece getPosition(Position position) {
-		return getPosition(position.getColumn(), position.getRow());
-	}
-
-	public StoredPiece getPosition(IndexValue column, IndexValue row) {
-		return board[column.toZeroBasedIndex()][row.toZeroBasedIndex()];
-	}
-
-	/**
-	 * Removes and returns the piece at a given position.
-	 * 
-	 * @param position the position to clear
-	 * @return the piece that was cleared from the position
-	 */
-	private StoredPiece remove(Position position) {
-		StoredPiece piece = getPosition(position);
-		setPosition(null, position);
-		piece.setPosition(null);
-		return piece;
 	}
 
 	/**
@@ -140,7 +90,8 @@ public class PlayingBoard extends Board {
 		// must remove from piece list first, as the position must still not be null for
 		// equality checks
 		piecesInPlay.getItem(captured.getColor()).remove(captured);
-		remove(captured.getPosition());
+		board.remove(captured.getPosition());
+		captured.setPosition(null);
 		capturedPieces.getItem(captured.getColor()).add(captured);
 	}
 
@@ -164,6 +115,10 @@ public class PlayingBoard extends Board {
 	public Piece getKing(ChessColor color) {
 		return kings.getItem(color);
 	}
+	
+	public Piece getPosition(Position position) {
+		return board.get(position);
+	}
 
 	// toString methods
 	/**
@@ -175,11 +130,12 @@ public class PlayingBoard extends Board {
 		for (char column = 'a'; column <= 'h'; column++) {
 			output += formatSpacing(column + "");
 		}
-		for (int row = 0; row <= 7; row++) {
+		for (int row = 1; row <= 8; row++) {
 			output += "\n" + formatSpacing((row + 1) + "");
-			for (char column = 0; column < 8; column++) {
-				if (board[column][row] != null) {
-					output += formatSpacing(board[column][row].toStringShort());
+			for (int column = 1; column <= 8; column++) {
+				StoredPiece position = board.get(new Position(column, row));
+				if (board.get(new Position(column, row)) != null) {
+					output += formatSpacing(position.toStringShort());
 				} else {
 					output += formatSpacing(" ");
 				}
@@ -292,15 +248,15 @@ public class PlayingBoard extends Board {
 		// during this operation for better speed.
 		List<StoredPiece> output = new ArrayList<>(32);
 		// initializes the pawns
-		initializePawns(output, ChessColor.WHITE, new IndexValue(2, false));
-		initializePawns(output, ChessColor.BLACK, new IndexValue(7, false));
+		initializePawns(output, ChessColor.WHITE, Constants.WHITE_PAWN_ROW);
+		initializePawns(output, ChessColor.BLACK, Constants.BLACK_PAWN_ROW);
 		// initializes the main pieces
-		initializePieceFour(output, PieceType.ROOK, new IndexValue('a'));
-		initializePieceFour(output, PieceType.KNIGHT, new IndexValue('b'));
-		initializePieceFour(output, PieceType.BISHOP, new IndexValue('c'));
+		initializePieceFour(output, PieceType.ROOK, 1);
+		initializePieceFour(output, PieceType.KNIGHT, 2);
+		initializePieceFour(output, PieceType.BISHOP, 3);
 		// initializes the royal pieces
-		initializePieceTwo(output, PieceType.QUEEN, new IndexValue('d'));
-		initializePieceTwo(output, PieceType.KING, new IndexValue('e'));
+		initializePieceTwo(output, PieceType.QUEEN, 4);
+		initializePieceTwo(output, PieceType.KING, 5);
 		return output;
 	}
 
@@ -312,9 +268,9 @@ public class PlayingBoard extends Board {
 	 * @param color     the color of the pawns to be initialized
 	 * @param row       the row of the pawns
 	 */
-	private static void initializePawns(List<StoredPiece> pieceList, ChessColor color, IndexValue row) {
+	private static void initializePawns(List<StoredPiece> pieceList, ChessColor color, int row) {
 		for (int column = 1; column <= 8; column++) {
-			StoredPiece newPawn = new StoredPiece(PieceType.PAWN, color, new Position(column, row.toOneBasedIndex()));
+			StoredPiece newPawn = new StoredPiece(PieceType.PAWN, color, new Position(column, row));
 			pieceList.add(newPawn);
 		}
 	}
@@ -328,10 +284,10 @@ public class PlayingBoard extends Board {
 	 * @param column    the column of two of the pieces. The other column is
 	 *                  calculated within the method.
 	 */
-	private static void initializePieceFour(List<StoredPiece> pieceList, PieceType piece, IndexValue column) {
-		int otherColumn = 7 - column.toZeroBasedIndex();
+	private static void initializePieceFour(List<StoredPiece> pieceList, PieceType piece, int column) {
+		int otherColumn = 8 - column;
 		initializePieceTwo(pieceList, piece, column);
-		initializePieceTwo(pieceList, piece, new IndexValue(otherColumn, true));
+		initializePieceTwo(pieceList, piece, otherColumn);
 	}
 
 	/**
@@ -340,13 +296,13 @@ public class PlayingBoard extends Board {
 	 * 
 	 * @param pieceList the list to which the initialized pieces are added
 	 * @param piece     the type of piece to initialize
-	 * @param column    the column of each of the pieces
+	 * @param column    the column of the two pieces
 	 */
-	private static void initializePieceTwo(List<StoredPiece> pieceList, PieceType piece, IndexValue column) {
+	private static void initializePieceTwo(List<StoredPiece> pieceList, PieceType piece, int column) {
 		StoredPiece whitePiece = new StoredPiece(piece, ChessColor.WHITE,
-				new Position(column, new IndexValue(1, false)));
+				new Position(column, 1));
 		StoredPiece blackPiece = new StoredPiece(piece, ChessColor.BLACK,
-				new Position(column, new IndexValue(8, false)));
+				new Position(column, Constants.BOARD_ROW_NUMBER));
 		pieceList.add(whitePiece);
 		pieceList.add(blackPiece);
 	}

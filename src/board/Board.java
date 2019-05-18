@@ -1,10 +1,8 @@
 package board;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import game.IndexValue;
 import game.Position;
 import game.Turn;
 import moveRules.MoveRule;
@@ -177,9 +175,9 @@ public abstract class Board {
 				// king
 				if (!(columnShift == 0 && rowShift == 0)) {
 					try {
-						int newColumn = king.getPosition().getColumn().toZeroBasedIndex() + columnShift;
-						int newRow = king.getPosition().getRow().toZeroBasedIndex() + rowShift;
-						Position newPosition = new Position(new IndexValue(newColumn), new IndexValue(newRow));
+						int newColumn = king.getPosition().getColumn() + columnShift;
+						int newRow = king.getPosition().getRow() + rowShift;
+						Position newPosition = new Position(newColumn, newRow);
 						if (king.getPieceType().getMoveRule().isValidMove(king.getPosition(), newPosition,
 								king.getColor(), this)
 								&& !isThreatened(king.getPosition(), king.getColor().getOppositeColor())) {

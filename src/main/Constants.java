@@ -1,7 +1,5 @@
 package main;
 
-import game.IndexValue;
-
 public class Constants {
 	/**
 	 * Stores the column length of the chess board
@@ -12,11 +10,11 @@ public class Constants {
 	 */
 	public static final int BOARD_ROW_NUMBER = 8;
 	/**
-	 * Stores the IndexValue of the row white pawns start on
+	 * Stores the value of the row white pawns start on
 	 */
-	public static final IndexValue WHITE_PAWN_ROW = new IndexValue(2, false);
+	public static final int WHITE_PAWN_ROW = 2;
 	/**
-	 * Stores the IndexValue of the row black pawns start on
+	 * Stores the value of the row black pawns start on
 	 */
-	public static final IndexValue BLACK_PAWN_ROW = new IndexValue(7, false);
+	public static final int BLACK_PAWN_ROW = 7;
 }

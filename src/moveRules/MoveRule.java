@@ -2,7 +2,6 @@ package moveRules;
 
 import board.Board;
 import board.ChessColor;
-import game.IndexValue;
 import game.Position;
 import game.Turn;
 
@@ -123,13 +122,13 @@ public abstract class MoveRule {
 	}
 
 	/**
-	 * Returns the absolute value difference between two IndexValues.
+	 * Returns the absolute value difference between two values.
 	 * 
-	 * @param current  the current IndexValue of the piece
-	 * @param proposed the proposed new IndexValue of the piece
+	 * @param current  the current value of the piece
+	 * @param proposed the proposed new value of the piece
 	 * @return positive integer value of the difference between the two values
 	 */
-	private int getAbsoluteDifference(IndexValue current, IndexValue proposed) {
-		return Math.abs(current.toZeroBasedIndex() - proposed.toZeroBasedIndex());
+	private int getAbsoluteDifference(int current, int proposed) {
+		return Math.abs(current - proposed);
 	}
 }

@@ -2,7 +2,6 @@ package board;
 
 import java.util.List;
 
-import game.IndexValue;
 import game.PieceDetailTurn;
 import game.Position;
 import game.Turn;
@@ -52,14 +51,6 @@ public class QuickMoveBoard extends Board {
 		}
 		// In all other cases, return like normal
 		return modifiedBoard.getPosition(position);
-	}
-
-	public Piece getPosition(IndexValue column, IndexValue row) {
-		return getPosition(new Position(column, row));
-	}
-
-	public Piece[] getPieceArray(ChessColor color) {
-		return getPieceList(color).toArray(new Piece[0]);
 	}
 
 	@Override

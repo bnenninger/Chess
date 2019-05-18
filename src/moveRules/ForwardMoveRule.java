@@ -30,7 +30,7 @@ class ForwardMoveRule extends StandardMoveRule {
 			direction = 1;
 		}
 		//checks if piece moves forward, return false for invalid if it moves back
-		int forwardDistance = (proposed.getRow().toZeroBasedIndex() - current.getRow().toZeroBasedIndex()) * direction;
+		int forwardDistance = (proposed.getRow() - current.getRow()) * direction;
 		if(forwardDistance < 0) {
 			return false;
 		}
