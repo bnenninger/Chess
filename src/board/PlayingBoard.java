@@ -131,7 +131,7 @@ public class PlayingBoard extends Board {
 			output += formatSpacing(column + "");
 		}
 		for (int row = 1; row <= 8; row++) {
-			output += "\n" + formatSpacing((row + 1) + "");
+			output += "\n" + formatSpacing(row + "");
 			for (int column = 1; column <= 8; column++) {
 				StoredPiece position = board.get(new Position(column, row));
 				if (board.get(new Position(column, row)) != null) {
@@ -285,7 +285,7 @@ public class PlayingBoard extends Board {
 	 *                  calculated within the method.
 	 */
 	private static void initializePieceFour(List<StoredPiece> pieceList, PieceType piece, int column) {
-		int otherColumn = 8 - column;
+		int otherColumn = Constants.BOARD_COLUMN_NUMBER - column + 1;
 		initializePieceTwo(pieceList, piece, column);
 		initializePieceTwo(pieceList, piece, otherColumn);
 	}

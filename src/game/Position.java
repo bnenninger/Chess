@@ -1,5 +1,7 @@
 package game;
 
+import java.util.Arrays;
+
 import main.Constants;
 
 /**
@@ -49,7 +51,7 @@ public final class Position {
 	}
 
 	/**
-	 * Returns a String representation of the Position, labelled as a Position
+	 * Returns a String representation of the Position, labeled as a Position
 	 * object.
 	 */
 	public String toString() {
@@ -65,6 +67,11 @@ public final class Position {
 		}
 		Position confirmedOther = (Position) other;
 		return confirmedOther.column == this.column && confirmedOther.row == this.row;
+	}
+	
+	public final int hashCode() {
+		int[] values = {column, row};
+		return Arrays.hashCode(values);
 	}
 
 	/**
