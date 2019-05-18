@@ -1,39 +1,104 @@
 package board;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import game.FullDetailTurn;
 import game.IndexValue;
-import game.PieceDetailTurn;
 import game.Position;
 import game.Turn;
-import moveRules.MoveRule;
 
 public class PlayingBoard extends Board {
 
 	private static final int PAD_WIDTH = 3;
 
-	// TODO change to some kind of map/tree
+	// TODO change to a hashmap
 	// a grid array is not necessary for this to function, as long as you can
 	// retrieve any location
 	private StoredPiece[][] board;// [column][row]
-	private ArrayList<StoredPiece> whitePieces;
-	private ArrayList<StoredPiece> blackPieces;
-	private ArrayList<StoredPiece> whiteCaptured;
-	private ArrayList<StoredPiece> blackCaptured;
+	private ColorItemStorage<List<StoredPiece>> piecesInPlay;
+//	private ArrayList<StoredPiece> whitePieces;
+//	private ArrayList<StoredPiece> blackPieces;
+	private ColorItemStorage<List<StoredPiece>> capturedPieces;
+//	private ArrayList<StoredPiece> whiteCaptured;
+//	private ArrayList<StoredPiece> blackCaptured;
 
 	// Kings are stored individually, as it must be verified if they are in check at
 	// every turn
-	private Piece whiteKing;
-	private Piece blackKing;
+	private ColorItemStorage<Piece> kings;
 
+	/**
+	 * Initializes a PlayingBoard with the default chess piece configuration.
+	 */
 	public PlayingBoard() {
+		this(initializePieces());
+	}
+
+	// TODO can JUnit test cases access private methods
+	/**
+	 * Initializes a PlayingBoard with the passed list of pieces.
+	 * 
+	 * @param pieces list of pieces to place on the board
+	 */
+	private PlayingBoard(List<StoredPiece> pieces) {
 		board = new StoredPiece[8][8];
-		whitePieces = new ArrayList<StoredPiece>(16);
-		blackPieces = new ArrayList<StoredPiece>(16);
-		whiteCaptured = new ArrayList<StoredPiece>();
-		blackCaptured = new ArrayList<StoredPiece>();
-		initializePieces();
+//		whitePieces = new ArrayList<StoredPiece>(16);
+//		blackPieces = new ArrayList<StoredPiece>(16);
+//		piecesInPlay = new ColorItemStorage<List<StoredPiece>>(whitePieces, blackPieces);
+		piecesInPlay = new ColorItemStorage<List<StoredPiece>>(new ArrayList<StoredPiece>(16),
+				new ArrayList<StoredPiece>(16));
+//		whiteCaptured = new ArrayList<StoredPiece>();
+//		blackCaptured = new ArrayList<StoredPiece>();
+		capturedPieces = new ColorItemStorage<List<StoredPiece>>(new ArrayList<StoredPiece>(),
+				new ArrayList<StoredPiece>());
+		kings = new ColorItemStorage<Piece>();
+		for (StoredPiece piece : pieces) {
+			// Stores the piece as a king if it is a king
+			if (piece.getPieceType() == PieceType.KING) {
+				kings.setItem(piece.getColor(), piece);
+			}
+			// Stores pieces in their appropriate lists based on their color
+			piecesInPlay.getItem(piece.getColor()).add(piece);
+			// places the piece on the board
+			setPosition(piece, piece.getPosition());
+		}
+	}
+
+	/**
+	 * 
+	 * Note: this method is only intended to be used for debugging, and should not
+	 * exist in production branches.
+	 * 
+	 * @param bool   unneeded variable to distinguish from an internal method
+	 * @param pieces Array of pieces to add to the game board
+	 */
+	public PlayingBoard(boolean bool, List<StoredPiece> pieces) {
+		this(pieces);
+	}
+
+	/**
+	 * Moves pieces based on a turn provided by the player. PERFORMS NO VERIFICATION
+	 * OF MOVE LEGALITY WHATSOEVER.
+	 * 
+	 * @param turn the turn to apply to the board
+	 * @return a FullDetailTurn containing the given turn, the moving and
+	 *         destination pieces, and whether the move is check or checkmate
+	 */
+	public FullDetailTurn move(Turn turn) {
+		StoredPiece destination = getPosition(turn.getProposed());
+		// if the destination is not empty, capture it
+		if (destination != null) {
+			capture(destination);
+		}
+		// move the piece
+		StoredPiece moving = remove(turn.getCurrent());
+		moving.setPosition(turn.getProposed());
+		setPosition(moving, turn.getProposed());
+		// returns a move with piece information
+		ChessColor oppositeColor = moving.getColor().getOppositeColor();
+		boolean check = super.isInCheck(oppositeColor);
+		boolean checkmate = super.isCheckMate(oppositeColor);
+		return new FullDetailTurn(turn, moving, destination, check, checkmate);
 	}
 
 	private void setPosition(StoredPiece piece, Position position) {
@@ -59,7 +124,7 @@ public class PlayingBoard extends Board {
 	 * @return the piece that was cleared from the position
 	 */
 	private StoredPiece remove(Position position) {
-		StoredPiece piece = getPosition(position); 
+		StoredPiece piece = getPosition(position);
 		setPosition(null, position);
 		piece.setPosition(null);
 		return piece;
@@ -72,32 +137,11 @@ public class PlayingBoard extends Board {
 	 * @param captured the piece being captured
 	 */
 	private void capture(StoredPiece captured) {
-		getPieceList(captured.getColor()).remove(captured);
-		getCapturedList(captured.getColor()).add(captured);
-		captured.setPosition(null);
-	}
-
-	/**
-	 * Returns an array of all the pieces currently in play of the given color.
-	 * 
-	 * @param color the color of the pieces in the array returned
-	 * @return Array of all pieces in play of that color.
-	 */
-	public Piece[] getPieceArray(ChessColor color) {
-		ArrayList<Piece> pieceList = getColorAssociatedList(whitePieces, blackPieces, color);
-		return pieceList.toArray(new Piece[pieceList.size()]);
-	}
-
-	/**
-	 * Returns an array of all the pieces that have been captured of the given
-	 * color.
-	 * 
-	 * @param color the color of the pieces in the array returned
-	 * @return Array of all the captured pieces of that color
-	 */
-	public Piece[] getCapturedArray(ChessColor color) {
-		ArrayList<Piece> pieceList = getColorAssociatedList(whiteCaptured, blackCaptured, color);
-		return pieceList.toArray(new Piece[pieceList.size()]);
+		// must remove from piece list first, as the position must still not be null for
+		// equality checks
+		piecesInPlay.getItem(captured.getColor()).remove(captured);
+		remove(captured.getPosition());
+		capturedPieces.getItem(captured.getColor()).add(captured);
 	}
 
 	/**
@@ -105,36 +149,20 @@ public class PlayingBoard extends Board {
 	 * color.
 	 * 
 	 * @param color the color of piece list to return
-	 * @return list of pieces currently in play
+	 * @return copy of the list of pieces currently in play
 	 */
-	public ArrayList<Piece> getPieceList(ChessColor color) {
-		return getColorAssociatedList(whitePieces, blackPieces, color);
+	public List<Piece> getPieceList(ChessColor color) {
+		return new ArrayList<Piece>(piecesInPlay.getItem(color));
 	}
 
 	/**
-	 * Returns a copy of the ArrayList of captured pieces of the given color.
+	 * Returns the king of the given color
 	 * 
-	 * @param color the color of the piece list to return
-	 * @return list of captured pieces
+	 * @param color color of the king to return
+	 * @return king of that color
 	 */
-	private ArrayList<Piece> getCapturedList(ChessColor color) {
-		return getColorAssociatedList(whiteCaptured, blackCaptured, color);
-	}
-
-	/**
-	 * Returns a copy of the ArrayList of Pieces associated with the color given.
-	 * 
-	 * @param whitePieces2 the list to return if WHITE is passed as the color
-	 * @param blackPieces2 the list to return if BLACK is passed as the color
-	 * @param color        the color of the ArrayList to get
-	 * @return the ArrayList associated with the given color
-	 */
-	private ArrayList<Piece> getColorAssociatedList(ArrayList<StoredPiece> whitePieces2,
-			ArrayList<StoredPiece> blackPieces2, ChessColor color) {
-		if (color.equals(ChessColor.WHITE)) {
-			return new ArrayList<Piece>(whitePieces2);
-		}
-		return new ArrayList<Piece>(blackPieces2);
+	public Piece getKing(ChessColor color) {
+		return kings.getItem(color);
 	}
 
 	// toString methods
@@ -171,219 +199,155 @@ public class PlayingBoard extends Board {
 		return String.format("%" + PAD_WIDTH + "s|", contents);
 	}
 
-	// TODO return DetailedTurn
-	// returns the captured Piece
 	/**
-	 * Moves pieces based on a turn provided by the player. PERFORMS NO VERIFICATION
-	 * OF MOVE LEGALITY WHATSOEVER.
+	 * ColorItemStorage serves as a class to store both a black and white item, and
+	 * make either easily accessible by providing the ChessColor.
 	 * 
-	 * @param turn the turn to apply to the board
-	 * @return a PieceDetailTurn containing both the turn and the piece moved and
-	 *         captured, if any.
+	 * @author Brendan Nenninger
+	 *
+	 * @param <T> Type of item the class stores
 	 */
-	public PieceDetailTurn move(Turn turn) {
-		StoredPiece destination = getPosition(turn.getProposed());
-		// if the destination is not empty, capture it
-		if (destination != null) {
-			capture(destination);
-		}
-		// move the piece
-		StoredPiece moving = remove(turn.getCurrent());
-		moving.setPosition(turn.getProposed());
-		setPosition(moving, turn.getProposed());
-		// returns a move with piece information
-		return new PieceDetailTurn(turn, moving, destination);
-	}
+	// Class introduced due to the similarity of code between the getPieceList,
+	// getCapturedList, and getKing methods.
+	private class ColorItemStorage<T> {
+		T whiteItem;
+		T blackItem;
 
-	public boolean isCheckMate(Piece kingInCheckmate) {
-		// pseudocode:
-		// if king can move out of check
-		// is not checkmate, return false;
-		if (super.isMoveOutofCheck(kingInCheckmate)) {
-			return false;
+		/**
+		 * Creates a new ColorItemStorage with the passed white and black items.
+		 * 
+		 * @param whiteItem
+		 * @param blackItem
+		 */
+		ColorItemStorage(T whiteItem, T blackItem) {
+			this.whiteItem = whiteItem;
+			this.blackItem = blackItem;
 		}
-		Piece[] threateningPieces = super.getThreateningArray(kingInCheckmate.getPosition(),
-				kingInCheckmate.getColor().getOppositeColor());
-		// all following cases the king cannot move out of check
-		// get number of pieces threatening the king
-		// if the number of pieces is >= 2, is checkmate, return true
-		// impossible for a piece to block or capture both in the same turn
-		if (threateningPieces.length > 1) {
-			return true;
-		}
-		// all following cases only have one piece threatening the king
-		// if the piece can be captured or blocked, return false
-		// otherwise, return true
-		Piece threat = threateningPieces[0];// threateningPieces guaranteed to be length 1, this gets the only threat
-		Turn[] blockCaptureTurns = this.getPossibleBlockOrCaptureMoves(kingInCheckmate, threat);
-		// if the number of possible block or capture turns is equal to zero, the move
-		// is checkmate, evaluates to and returns true. Otherwise, not checkmate,
-		// evaluates to and returns false.
-		return blockCaptureTurns.length == 0;
-	}
 
-	/**
-	 * Evaluates the number of moves that would stop a check either by blocking it
-	 * or by capturing the checking piece.
-	 * 
-	 * @param king        the king being threatened
-	 * @param threatening the piece that threatens the king with check
-	 * @return array of all possible, legal, and valid moves that would prevent the
-	 *         check
-	 */
-	private Turn[] getPossibleBlockOrCaptureMoves(Piece king, Piece threatening) {
-		Piece[] kingColorPieces = getPieceArray(king.getColor());
-		Position[] intermediaryPositions = threatening.getPieceType().getMoveRule()
-				.getIntermediaryPositions(threatening.getPosition(), king.getPosition(), threatening.getColor());
-		ArrayList<Turn> blockingCapturingTurns = new ArrayList<Turn>(7);
-		for (Piece piece : kingColorPieces) {
-			if (!piece.getPieceType().equals(PieceType.KING)) {// king cannot block check on itself
-				MoveRule moveRule = piece.getPieceType().getMoveRule();
-				// checks for moves that can block the piece
-				for (Position blockPosition : intermediaryPositions) {
-					if (moveRule.isValidMove(piece.getPosition(), blockPosition, piece.getColor(), this)) {
-						Turn possibleTurn = new Turn(piece.getPosition(), blockPosition);
-						blockingCapturingTurns.add(possibleTurn);
-					}
+		/**
+		 * Creates a ColorItemStorage with no values stored. Allows use of the setItem
+		 * method to set the values.
+		 */
+		// Intended for storing the kings, as they cannot be pre-initialized unlike the
+		// piece lists
+		ColorItemStorage() {
+			this(null, null);
+		}
+
+		/**
+		 * Returns the stored item associated with the passed color.
+		 * 
+		 * @param color the color of the item to return
+		 * @return item associated with the passed color
+		 */
+		T getItem(ChessColor color) {
+			switch (color) {
+			case WHITE:
+				return whiteItem;
+			case BLACK:
+				return blackItem;
+			default:
+				throw new IllegalArgumentException("Invalid item color");
+			}
+		}
+
+		/**
+		 * Sets the value of the item associated with the passed color. Does not allow
+		 * reseting items that have already been set.
+		 * 
+		 * @param color the color of the item to set
+		 * @param item  the value to set the item to
+		 */
+		void setItem(ChessColor color, T item) {
+			switch (color) {
+			case WHITE:
+				// throws exception if the item is not currently null to prevent overwriting
+				if (whiteItem != null) {
+					throw new IllegalArgumentException("Cannot overwrite previous white item");
 				}
-				// checks for moves that can capture the piece
-				moveRule = piece.getPieceType().getCaptureRule();
-				if (moveRule.isValidMove(piece.getPosition(), threatening.getPosition(), piece.getColor(), this)) {
-					Turn possibleTurn = new Turn(piece.getPosition(), threatening.getPosition());
-					blockingCapturingTurns.add(possibleTurn);
+				this.whiteItem = item;
+				break;
+			case BLACK:
+				if (blackItem != null) {
+					throw new IllegalArgumentException("Cannot overwrite previous black item");
 				}
+				this.blackItem = item;
+				break;
+			// throws exception for all other colors, as they are not valid for this purpose
+			default:
+				throw new IllegalArgumentException("Invalid color");
 			}
-		}
-		return blockingCapturingTurns.toArray(new Turn[blockingCapturingTurns.size()]);
-	}
-
-	/**
-	 * Throws exceptions for moves judged illegal due to there not being a moving
-	 * piece, there being a same color piece at the destination, there being a king
-	 * at the destination, or the move being illegal based on the piece moving.
-	 * 
-	 * @param moving      the Piece being moved, at the current position
-	 * @param destination the Piece at the proposed position
-	 * @param color       the color of the piece moving
-	 */
-	private void illegalMoveExceptionThrower(Turn turn, Piece moving, Piece destination, ChessColor color,
-			boolean isCapture) {
-		// checks if there is a movable piece at that position, of the color that is
-		// currently taking a turn
-		if (moving == null || !moving.getColor().equals(color)) {
-			throw new IllegalArgumentException("no " + color.toString() + " piece at that position");
-		}
-		// checks that destination is a piece before checking further info on it
-		if (destination != null) {
-			// checks if the destination is empty or can be captured
-			if (destination.getColor().equals(color)) {
-				throw new IllegalArgumentException("same color piece at destination");
-			}
-			// checks if the destination is a king
-			if (destination.getPieceType().equals(PieceType.KING)) {
-				throw new IllegalArgumentException("cannot capture king");
-			}
-		}
-		// finds the proper MoveRule for the movement, choosing the capture or regular
-		// rule
-		MoveRule rule = moving.getPieceType().getMoveRule();
-		if (isCapture) {
-			rule = moving.getPieceType().getCaptureRule();
-		}
-		boolean validMove = rule.isValidMove(turn.getCurrent(), turn.getProposed(), color, this);
-		if (!validMove) {
-			throw new IllegalArgumentException("impossible move");
-		}
-	}
-
-	/**
-	 * Returns the king of the given color
-	 * 
-	 * @param color color of the king to return
-	 * @return king of that color
-	 */
-	public Piece getKing(ChessColor color) {
-		switch (color) {
-		case BLACK:
-			return blackKing;
-		case WHITE:
-			return whiteKing;
-		default:
-			throw new IllegalArgumentException("DRAW king does not exist");
 		}
 	}
 
 	// Initialization methods
 	/**
-	 * Initializes the pieces onto the chess board
+	 * Initializes the pieces for a chess game and returns them as a list. Does not
+	 * put into chess board.
+	 * 
+	 * @return list of chess pieces, with positions, to put into a PlayingBoard
 	 */
-	private void initializePieces() {
+	private static List<StoredPiece> initializePieces() {
+		// Initializes output ArrayList to length of 32 so that it will not be resized
+		// during this operation for better speed.
+		List<StoredPiece> output = new ArrayList<>(32);
 		// initializes the pawns
-		initializePawns(new IndexValue(2, false), ChessColor.WHITE);
-		initializePawns(new IndexValue(7, false), ChessColor.BLACK);
+		initializePawns(output, ChessColor.WHITE, new IndexValue(2, false));
+		initializePawns(output, ChessColor.BLACK, new IndexValue(7, false));
 		// initializes the main pieces
-		initializePieceFour(new IndexValue('a'), PieceType.ROOK);
-		initializePieceFour(new IndexValue('b'), PieceType.KNIGHT);
-		initializePieceFour(new IndexValue('c'), PieceType.BISHOP);
+		initializePieceFour(output, PieceType.ROOK, new IndexValue('a'));
+		initializePieceFour(output, PieceType.KNIGHT, new IndexValue('b'));
+		initializePieceFour(output, PieceType.BISHOP, new IndexValue('c'));
 		// initializes the royal pieces
-		initializePieceTwo(new IndexValue('d'), PieceType.QUEEN);
-		initializePieceTwo(new IndexValue('e'), PieceType.KING);
+		initializePieceTwo(output, PieceType.QUEEN, new IndexValue('d'));
+		initializePieceTwo(output, PieceType.KING, new IndexValue('e'));
+		return output;
 	}
 
 	/**
-	 * Initalizes all of a row to be pawns
+	 * Initializes all of the pawns in a row. Adds the initializes pieces to the
+	 * passed list of pieces.
 	 * 
-	 * @param row   the row to fill with pawns
-	 * @param color the color the pawns will be
+	 * @param pieceList the list to which the initialized pieces are added.
+	 * @param color     the color of the pawns to be initialized
+	 * @param row       the row of the pawns
 	 */
-	private void initializePawns(IndexValue row, ChessColor color) {
-		for (int column = 0; column < 8; column++) {
-			StoredPiece newPawn = new StoredPiece(PieceType.PAWN, color);
-			addPiece(newPawn, new IndexValue(column), row);
+	private static void initializePawns(List<StoredPiece> pieceList, ChessColor color, IndexValue row) {
+		for (int column = 1; column <= 8; column++) {
+			StoredPiece newPawn = new StoredPiece(PieceType.PAWN, color, new Position(column, row.toOneBasedIndex()));
+			pieceList.add(newPawn);
 		}
 	}
 
 	/**
-	 * Initializes quads of pieces, such as rooks, including both colors of the
-	 * piece
+	 * Initializes all four of a specific piece, of both colors. Adds the
+	 * initialized pieces to the passed list of pieces.
 	 * 
-	 * @param lowColumn the lowest column value that the piece is placed at
-	 * @param piece     the piece to be placed
+	 * @param pieceList the list to which the initialized pieces are added.
+	 * @param piece     the type of piece to initialize
+	 * @param column    the column of two of the pieces. The other column is
+	 *                  calculated within the method.
 	 */
-	private void initializePieceFour(IndexValue lowColumn, PieceType piece) {
-		int otherColumn = 7 - lowColumn.toZeroBasedIndex();
-		initializePieceTwo(lowColumn, piece);
-		initializePieceTwo(new IndexValue(otherColumn, true), piece);
+	private static void initializePieceFour(List<StoredPiece> pieceList, PieceType piece, IndexValue column) {
+		int otherColumn = 7 - column.toZeroBasedIndex();
+		initializePieceTwo(pieceList, piece, column);
+		initializePieceTwo(pieceList, piece, new IndexValue(otherColumn, true));
 	}
 
 	/**
-	 * Places pairs of pieces, of both colors. Stores the kings if those are the
-	 * pieces added.
+	 * Initializes pairs of pieces, of both colors. Adds the initialized pieces to
+	 * the passed list of pieces.
 	 * 
-	 * @param column the column of the pieces initialized
-	 * @param piece  the piece to be added
+	 * @param pieceList the list to which the initialized pieces are added
+	 * @param piece     the type of piece to initialize
+	 * @param column    the column of each of the pieces
 	 */
-	private void initializePieceTwo(IndexValue column, PieceType piece) {
-		StoredPiece whitePiece = new StoredPiece(piece, ChessColor.WHITE);
-		StoredPiece blackPiece = new StoredPiece(piece, ChessColor.BLACK);
-		addPiece(whitePiece, column, new IndexValue(1, false));
-		addPiece(blackPiece, column, new IndexValue(8, false));
-		if (piece.equals(PieceType.KING)) {
-			whiteKing = whitePiece;
-			blackKing = blackPiece;
-		}
-	}
-
-	/**
-	 * Adds a new Piece to the board and the lists of pieces
-	 * 
-	 * @param piece  the piece to be added. This reference should be unique
-	 * @param column the column to add the piece in
-	 * @param row    the row to add the piece in
-	 */
-	private void addPiece(StoredPiece piece, IndexValue column, IndexValue row) {
-		setPosition(piece, column, row);
-		getPieceList(piece.getColor()).add(piece);
-		piece.setPosition(new Position(column, row));
+	private static void initializePieceTwo(List<StoredPiece> pieceList, PieceType piece, IndexValue column) {
+		StoredPiece whitePiece = new StoredPiece(piece, ChessColor.WHITE,
+				new Position(column, new IndexValue(1, false)));
+		StoredPiece blackPiece = new StoredPiece(piece, ChessColor.BLACK,
+				new Position(column, new IndexValue(8, false)));
+		pieceList.add(whitePiece);
+		pieceList.add(blackPiece);
 	}
 }
