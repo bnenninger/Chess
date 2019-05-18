@@ -1,8 +1,8 @@
 Chess
 Brendan Nenninger
-V0.1 unfinished
+v0.1
 
-Functionality:
+Version Specified Functionality:
 	Console input, Console output.
 	Plays a chess game between two people using hotseat multiplayer. Does not allow for any storage of a game.
 

@@ -1,6 +1,6 @@
 package board;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import game.IndexValue;
 import game.PieceDetailTurn;
@@ -54,30 +54,29 @@ public class QuickMoveBoard extends Board {
 		return modifiedBoard.getPosition(position);
 	}
 
-	@Override
 	public Piece getPosition(IndexValue column, IndexValue row) {
 		return getPosition(new Position(column, row));
 	}
 
-	@Override
 	public Piece[] getPieceArray(ChessColor color) {
 		return getPieceList(color).toArray(new Piece[0]);
 	}
 
 	@Override
-	public ArrayList<Piece> getPieceList(ChessColor color) {
-		ArrayList<Piece> pieces = modifiedBoard.getPieceList(color);
-		// If the captured piece in the quickmove is null, then the pieces in neither
-		// list should be modified. Can simply return the list as is.
-		if (quickMove.getCaptured() == null) {
-			return pieces;
-		}
-		// if the captured piece is the same color as the color of the list to be taken,
-		// remove that Piece from the list
-		if (quickMove.getCaptured().getColor().equals(color)) {
+	public List<Piece> getPieceList(ChessColor color) {
+		List<Piece> pieces = modifiedBoard.getPieceList(color);
+		// Case for if the list retrieved is NOT of the moved color
+		if (quickMove.getPiece().getColor() != color) {
+			// if there is no captured piece, the list of unmoved pieces remains the same
+			if (quickMove.getCaptured() == null) {
+				return pieces;
+			}
+			// otherwise, there is a captured piece, so that piece must be removed from the
+			// list
 			pieces.remove(quickMove.getCaptured());
 			return pieces;
 		}
+
 		// all other cases are requests for the color of the moving piece
 		// need to replace the moving piece in the array with a QuickMovePiece
 		// reflecting the new position
@@ -90,10 +89,15 @@ public class QuickMoveBoard extends Board {
 	public Piece getKing(ChessColor color) {
 		// if the king was not moved, can just return it unmodified
 		Piece king = modifiedBoard.getKing(color);
-		if (!quickMove.getPiece().getPieceType().equals(PieceType.KING)) {
+		// if the color of the king to return is different from the moved piece, the
+		// king cannot have moved. Returns the king without modification.
+		if (quickMove.getPiece().getColor() != color) {
 			return king;
 		}
-		// otherwise, creates a QuickMovePiece of the moved king
-		return new QuickMovePiece(king, quickMove.getProposed());
+		// returns a modified king if it was the king that moved
+		// otherwise, returns the king unmodified
+		return quickMove.getPiece().getPieceType().equals(PieceType.KING)
+				? new QuickMovePiece(king, quickMove.getProposed())
+				: king;
 	}
 }
