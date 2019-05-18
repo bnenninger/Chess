@@ -3,7 +3,8 @@ Brendan Nenninger
 V0.1 unfinished
 
 Functionality:
-	Console input, Console output
+	Console input, Console output.
+	Plays a chess game between two people using hotseat multiplayer. Does not allow for any storage of a game.
 
 Definitions:
 	current position: the position of a piece before it moves.
